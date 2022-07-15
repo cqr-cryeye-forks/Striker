@@ -22,7 +22,7 @@
 
 ### Important Notice
 Striker 2.0 is still in prototype phase, which means it's not intended to be used by regular users. It has been made public for contrbutions to make the development faster.\
-**Usage:** `python3 striker.py example.com`
+**Usage:** `python3 striker.py --url example.com`
 
 ### Workflow
 ##### Phase 1: Attack Surface Discovery
