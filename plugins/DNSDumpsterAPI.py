@@ -66,7 +66,7 @@ class DNSDumpsterAPI:
             'Cache-Control': 'max-age=0',
             'TE': 'Trailers',
         }
-        req = s.get(dnsdumpster_url, headers=headers)
+        req = s.get(dnsdumpster_url, headers=headers, verify=False)
         soup = BeautifulSoup(req.content, 'html.parser')
         csrf_middleware = soup.findAll('input', attrs={'name': 'csrfmiddlewaretoken'})[0]['value']
         self.display_message(f'Retrieved token: {csrf_middleware}')
