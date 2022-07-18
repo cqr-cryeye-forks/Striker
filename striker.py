@@ -6,6 +6,7 @@ import socket
 import ssl
 from http.cookiejar import LWPCookieJar
 from re import search
+from urllib.error import HTTPError
 from urllib.parse import urlencode, urlparse
 
 import mechanize
@@ -238,10 +239,11 @@ class Checker:
                 print(url)
                 self.sql_injection(url)
                 url = url.replace('=', '<svg/onload=alert()>')
-                r = str(self.br.open(url).read().decode('utf-8'))
-                if '<svg/onload=alert()>' in r:
-                    print('[+] One or more parameters are vulnerable to XSS')
-                break
+                with contextlib.suppress(HTTPError):
+                    r = str(self.br.open(url).read().decode('utf-8'))
+                    if '<svg/onload=alert()>' in r:
+                        print('[+] One or more parameters are vulnerable to XSS')
+                    break
             print('[+] These are the URLs having parameters:')
             for url in params:
                 print(url)
