@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.10
 import contextlib
 import os
+import re
 import socket
 from http.cookiejar import LWPCookieJar
 from re import search
@@ -84,7 +85,7 @@ class Checker:
         self.br.form['page'] = url
         req = self.br.submit()
         result = str(req.read().decode('utf-8'))
-        if match := search(r"---(?s)\.*---", result):
+        if match := search(fr"---{re.S}\.*---", result):
             print('[+] One or more parameters are vulnerable to SQL injection')
             run_test = bool(cli_arguments.silent or input('[?] Show whole report? [Y/n] ').lower() != 'n')
             if run_test:
