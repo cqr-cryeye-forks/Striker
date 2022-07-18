@@ -41,10 +41,10 @@ class TakeOver:
         # Sanitize fingerprints
         matches = re.findall(regex, resp)
         for match in matches:
-            print(f'\t\033[91m Takeover detected: {url}\033[1;32;40m')
+            print(f'\t Takeover detected: {url}')
             if match in self.fingerprints.keys():
                 # Sanity check as to not error out
-                print(f'\t\033[91m Type of takeover is: {self.fingerprints[match]}\033[1;32;40m')
+                print(f'\t Type of takeover is: {self.fingerprints[match]}')
 
     async def do_take(self):
         try:

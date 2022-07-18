@@ -40,7 +40,7 @@ class SearchIntelx:
                 "target": 0
             }
 
-            total_resp = requests.post(f'{self.database}/phonebook/search', headers=headers, json=data)
+            total_resp = requests.post(f'{self.database}/phonebook/search', headers=headers, json=data, verify=False)
             phonebook_id = json.loads(total_resp.text)['id']
             await asyncio.sleep(2)
 

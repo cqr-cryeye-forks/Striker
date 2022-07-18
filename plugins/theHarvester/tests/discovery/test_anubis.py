@@ -18,7 +18,7 @@ class TestAnubis:
     async def test_api(self):
         base_url = f'https://jldc.me/anubis/subdomains/{TestAnubis.domain()}'
         headers = {'User-Agent': Core.get_user_agent()}
-        request = requests.get(base_url, headers=headers)
+        request = requests.get(base_url, headers=headers, verify=False)
         assert request.status_code == 200
 
     async def test_do_search(self):

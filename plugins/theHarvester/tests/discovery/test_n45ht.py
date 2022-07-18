@@ -18,7 +18,7 @@ class TestN45ht(object):
     async def test_api(self):
         base_url = f'https://api.n45ht.or.id/v1/subdomain-enumeration?domain={TestN45ht.domain()}'
         headers = {'User-Agent': Core.get_user_agent()}
-        request = requests.get(base_url, headers=headers)
+        request = requests.get(base_url, headers=headers, verify=False)
         assert request.status_code == 200
 
     async def test_do_search(self):

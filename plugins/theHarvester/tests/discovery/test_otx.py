@@ -18,7 +18,7 @@ class TestOtx(object):
     async def test_api(self):
         base_url = f'https://otx.alienvault.com/api/v1/indicators/domain/{TestOtx.domain()}/passive_dns'
         headers = {'User-Agent': Core.get_user_agent()}
-        request = requests.get(base_url, headers=headers)
+        request = requests.get(base_url, headers=headers, verify=False)
         assert request.status_code == 200
 
     async def test_search(self):

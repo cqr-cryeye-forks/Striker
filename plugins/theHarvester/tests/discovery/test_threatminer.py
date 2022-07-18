@@ -18,7 +18,7 @@ class TestThreatminer(object):
     async def test_api(self):
         base_url = f'https://api.threatminer.org/v2/domain.php?q={TestThreatminer.domain()}&rt=5'
         headers = {'User-Agent': Core.get_user_agent()}
-        request = requests.get(base_url, headers=headers)
+        request = requests.get(base_url, headers=headers, verify=False)
         assert request.status_code == 200
 
     async def test_search(self):
