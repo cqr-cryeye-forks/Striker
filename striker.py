@@ -3,6 +3,7 @@ import contextlib
 import os
 import re
 import socket
+import ssl
 from http.cookiejar import LWPCookieJar
 from re import search
 from urllib.parse import urlencode, urlparse
@@ -49,7 +50,7 @@ class Checker:
     @staticmethod
     def _init_browser():
         br = mechanize.Browser()
-
+        br.set_ca_data(context=ssl._create_unverified_context(cert_reqs=ssl.CERT_NONE))
         # Cookie Jar
         cj = LWPCookieJar()
         br.set_cookiejar(cj)
