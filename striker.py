@@ -50,8 +50,9 @@ class Checker:
 
     @staticmethod
     def _init_browser():
+        # ssl._create_default_https_context = ssl._create_unverified_context
         br = mechanize.Browser()
-        br.set_ca_data(context=ssl._create_unverified_context(cert_reqs=ssl.CERT_NONE))
+        # br.set_ca_data(context=ssl._create_unverified_context(cert_reqs=ssl.CERT_NONE))
         # Cookie Jar
         cj = LWPCookieJar()
         br.set_cookiejar(cj)
