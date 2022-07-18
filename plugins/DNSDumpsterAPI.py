@@ -111,10 +111,10 @@ class DNSDumpsterAPI:
                 val = val[1:]
             tmp_url = f'{dnsdumpster_url}{val}'
             response = requests.get(tmp_url, verify=False)
-            image_data = response.content.decode()
+            # image_data = response.content.decode()
             resource['img'] = tmp_url
             resource['is_image_available'] = response.status_code == http.HTTPStatus.OK
-            resource['image_data'] = image_data
+            # resource['image_data'] = image_data
         except Exception as e:
             print(f'Get DNS image error: {e}')
             resource['is_image_available'] = False
