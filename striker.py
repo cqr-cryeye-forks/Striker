@@ -201,10 +201,11 @@ class Checker:
         print('\n[+] TXT Records')
         for entry in resource['dns_records']['txt']:
             print(entry)
+        dns_image_link = f"https://dnsdumpster.com/static/map/{self.domain}.png"
         try:
-            response = requests.get(self.domain, verify=False)
+            response = requests.get(dns_image_link, verify=False)
             if response.status_code == http.HTTPStatus.OK:
-                print('\n[+] DNS Map: https://dnsdumpster.com/static/map/%s.png\n' % self.domain)
+                print(f'\n[+] DNS Map: {dns_image_link}\n')
         except Exception as e:
             print(e)
         else:
