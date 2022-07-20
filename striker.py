@@ -1,9 +1,9 @@
 #!/usr/bin/env python3.10
 import contextlib
+import http
 import os
 import re
 import socket
-import ssl
 from http.cookiejar import LWPCookieJar
 from re import search
 from urllib.error import HTTPError
@@ -178,7 +178,7 @@ class Checker:
 
         if match := search(r' \b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', result):
             self.bypass_ip_addr = match.group().split(' ')[1][:-1]
-            print('\033[1;32m[+]\033[1;m Real IP Address : ' + self.bypass_ip_addr)
+            print(f'[+] Real IP Address : {self.bypass_ip_addr}')
 
     def dns_dump(self):
         try:
@@ -201,7 +201,14 @@ class Checker:
         print('\n[+] TXT Records')
         for entry in resource['dns_records']['txt']:
             print(entry)
-        print('\n[+] DNS Map: https://dnsdumpster.com/static/map/%s.png\n' % self.domain)
+        try:
+            response = requests.get(self.domain, verify=False)
+            if response.status_code == http.HTTPStatus.OK:
+                print('\n[+] DNS Map: https://dnsdumpster.com/static/map/%s.png\n' % self.domain)
+        except Exception as e:
+            print(e)
+        else:
+            print('\n[-] No map for DNS')
 
     def fingerprint(self):
         try:
