@@ -1,6 +1,8 @@
-from theHarvester.discovery.constants import *
-from theHarvester.lib.core import *
-from spyse import Client, SearchQuery, QueryParam, DomainSearchParams, Operators
+from plugins.theHarvester.theHarvester.discovery.constants import MissingKey
+from plugins.theHarvester.theHarvester.lib.core import Core
+
+# from spyse import Client, SearchQuery, QueryParam, DomainSearchParams, Operators
+from spyse_python.spyse import Client, SearchQuery, QueryParam, DomainSearchParams, Operators
 
 
 class SearchSpyse:

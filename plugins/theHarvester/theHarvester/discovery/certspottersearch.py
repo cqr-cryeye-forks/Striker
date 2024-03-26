@@ -1,4 +1,4 @@
-from theHarvester.lib.core import *
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher
 
 
 class SearchCertspoter:

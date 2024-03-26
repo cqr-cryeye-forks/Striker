@@ -1,7 +1,9 @@
-from theHarvester.discovery.constants import *
-from theHarvester.lib.core import *
-from theHarvester.parsers import myparser
+
 import json
+
+from plugins.theHarvester.theHarvester.discovery.constants import googleUA
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class SearchDuckDuckGo:

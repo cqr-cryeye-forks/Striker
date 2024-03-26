@@ -1,6 +1,7 @@
-from theHarvester.lib.core import *
 from typing import Union, Optional
 import random
+
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher, Core
 
 googleUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 ' \
            'Safari/537.36 '
@@ -111,6 +112,8 @@ class MissingKey(Exception):
     """
     def __init__(self, source: Optional[str]):
         if source:
+            if source == "PentestTools":
+                a=1
             self.message = f'\n[!] Missing API key for {source}. '
         else:
             self.message = '\n[!] Missing CSE id. '

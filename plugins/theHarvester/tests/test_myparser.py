@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-from theHarvester.parsers import myparser
 import pytest
+
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class TestMyParser(object):

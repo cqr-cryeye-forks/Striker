@@ -1,11 +1,13 @@
-from theHarvester.discovery.constants import *
-from theHarvester.lib.core import *
-from theHarvester.parsers import myparser
+
 from typing import List, Dict, Any, Optional, NamedTuple, Tuple
 import asyncio
 import aiohttp
 import urllib.parse as urlparse
 import random
+
+from plugins.theHarvester.theHarvester.discovery.constants import get_delay, MissingKey
+from plugins.theHarvester.theHarvester.lib.core import Core
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class RetryResult(NamedTuple):

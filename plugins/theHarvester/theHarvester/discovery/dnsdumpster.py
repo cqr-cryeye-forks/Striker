@@ -1,7 +1,9 @@
-from theHarvester.lib.core import *
-from theHarvester.parsers import myparser
+
 import aiohttp
 import asyncio
+
+from plugins.theHarvester.theHarvester.lib.core import Core
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class SearchDnsDumpster:

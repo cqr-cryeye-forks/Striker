@@ -2,7 +2,8 @@
 # Note: This script runs theHarvester
 import sys
 import asyncio
-from theHarvester import __main__
+
+from plugins.theHarvester.theHarvester import __main__
 
 if sys.version_info.major < 3 or sys.version_info.minor < 7:
     print('[!] Make sure you have Python 3.7+ installed, quitting.\n\n')

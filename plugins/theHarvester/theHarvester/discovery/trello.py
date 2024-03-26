@@ -1,7 +1,10 @@
-from theHarvester.discovery.constants import *
-from theHarvester.parsers import myparser
+
 import random
 import asyncio
+
+from plugins.theHarvester.theHarvester.discovery.constants import googleUA, google_workaround, search, get_delay
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class SearchTrello:

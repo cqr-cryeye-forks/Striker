@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # coding=utf-8
 import requests
-from theHarvester.lib.core import *
-from theHarvester.discovery import anubis
 import os
 import pytest
+
+from plugins.theHarvester.theHarvester.discovery import anubis
+from plugins.theHarvester.theHarvester.lib.core import Core
 
 pytestmark = pytest.mark.asyncio
 github_ci = os.getenv('GITHUB_ACTIONS')  # Github set this to be the following: true instead of True

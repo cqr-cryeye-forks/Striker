@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from theHarvester.lib.core import *
+
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher, Core
 
 
 class SearchRapidDns:

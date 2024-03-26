@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
-from typing import Dict, List
-from theHarvester.discovery import *
-from theHarvester.discovery import dnssearch, takeover, shodansearch
-from theHarvester.discovery.constants import *
-from theHarvester.lib import hostchecker
-from theHarvester.lib import stash
-from theHarvester.lib.core import *
+from typing import Dict, List, Any
+
 import argparse
 import asyncio
 import ujson
@@ -15,23 +10,39 @@ import sys
 import string
 import secrets
 
+from plugins.theHarvester.theHarvester.discovery import dnssearch, shodansearch, takeover
+from plugins.theHarvester.theHarvester.discovery.constants import MissingKey
+from plugins.theHarvester.theHarvester.lib import stash, hostchecker
+from plugins.theHarvester.theHarvester.lib.core import Core
+from plugins.theHarvester.theHarvester.screenshot.screenshot import ScreenShotter
+
 
 async def start(rest_args=None):
     """Main program function"""
-    parser = argparse.ArgumentParser(description='theHarvester is used to gather open source intelligence (OSINT) on a company or domain.')
+    parser = argparse.ArgumentParser(
+        description='theHarvester is used to gather open source intelligence (OSINT) on a company or domain.')
     parser.add_argument('-d', '--domain', help='Company name or domain to search.', required=True)
     parser.add_argument('-l', '--limit', help='Limit the number of search results, default=500.', default=500, type=int)
     parser.add_argument('-S', '--start', help='Start with result number X, default=0.', default=0, type=int)
-    parser.add_argument('-g', '--google-dork', help='Use Google Dorks for Google search.', default=False, action='store_true')
-    parser.add_argument('-p', '--proxies', help='Use proxies for requests, enter proxies in proxies.yaml.', default=False, action='store_true')
-    parser.add_argument('-s', '--shodan', help='Use Shodan to query discovered hosts.', default=False, action='store_true')
-    parser.add_argument('--screenshot', help='Take screenshots of resolved domains specify output directory: --screenshot output_directory', default="", type=str)
-    parser.add_argument('-v', '--virtual-host', help='Verify host name via DNS resolution and search for virtual hosts.', action='store_const', const='basic', default=False)
+    parser.add_argument('-g', '--google-dork', help='Use Google Dorks for Google search.', default=False,
+                        action='store_true')
+    parser.add_argument('-p', '--proxies', help='Use proxies for requests, enter proxies in proxies.yaml.',
+                        default=False, action='store_true')
+    parser.add_argument('-s', '--shodan', help='Use Shodan to query discovered hosts.', default=False,
+                        action='store_true')
+    parser.add_argument('--screenshot',
+                        help='Take screenshots of resolved domains specify output directory: --screenshot output_directory',
+                        default="", type=str)
+    parser.add_argument('-v', '--virtual-host',
+                        help='Verify host name via DNS resolution and search for virtual hosts.', action='store_const',
+                        const='basic', default=False)
     parser.add_argument('-e', '--dns-server', help='DNS server to use for lookup.')
     parser.add_argument('-t', '--dns-tld', help='Perform a DNS TLD expansion discovery, default False.', default=False)
     parser.add_argument('-r', '--take-over', help='Check for takeovers.', default=False, action='store_true')
-    parser.add_argument('-n', '--dns-lookup', help='Enable DNS server lookup, default False.', default=False, action='store_true')
-    parser.add_argument('-c', '--dns-brute', help='Perform a DNS brute force on the domain.', default=False, action='store_true')
+    parser.add_argument('-n', '--dns-lookup', help='Enable DNS server lookup, default False.', default=False,
+                        action='store_true')
+    parser.add_argument('-c', '--dns-brute', help='Perform a DNS brute force on the domain.', default=False,
+                        action='store_true')
     parser.add_argument('-f', '--filename', help='Save the results to an XML and JSON file.', default='', type=str)
     parser.add_argument('-b', '--source', help='''anubis, baidu, bing, binaryedge, bingapi, bufferoverun, censys, certspotter, crtsh,
                             dnsdumpster, duckduckgo, fullhunt, github-code, google,
@@ -193,7 +204,7 @@ async def start(rest_args=None):
 
             for engineitem in engines:
                 if engineitem == 'anubis':
-                    from theHarvester.discovery import anubis
+                    from plugins.theHarvester.theHarvester.discovery import anubis
                     try:
                         anubis_search = anubis.SearchAnubis(word)
                         stor_lst.append(store(anubis_search, engineitem, store_host=True))
@@ -201,7 +212,8 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'baidu':
-                    from theHarvester.discovery import baidusearch
+                    from plugins.theHarvester.theHarvester.discovery import baidusearch
+
                     try:
                         baidu_search = baidusearch.SearchBaidu(word, limit)
                         stor_lst.append(store(baidu_search, engineitem, store_host=True, store_emails=True))
@@ -209,7 +221,8 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'binaryedge':
-                    from theHarvester.discovery import binaryedgesearch
+                    from plugins.theHarvester.theHarvester.discovery import binaryedgesearch
+
                     try:
                         binaryedge_search = binaryedgesearch.SearchBinaryEdge(word, limit)
                         stor_lst.append(store(binaryedge_search, engineitem, store_host=True))
@@ -217,7 +230,8 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'bing' or engineitem == 'bingapi':
-                    from theHarvester.discovery import bingsearch
+                    from plugins.theHarvester.theHarvester.discovery import bingsearch
+
                     try:
                         bing_search = bingsearch.SearchBing(word, limit, start)
                         bingapi = ''
@@ -234,7 +248,7 @@ async def start(rest_args=None):
                             print(e)
 
                 elif engineitem == 'bufferoverun':
-                    from theHarvester.discovery import bufferoverun
+                    from plugins.theHarvester.theHarvester.discovery import bufferoverun
                     try:
                         bufferoverun_search = bufferoverun.SearchBufferover(word)
                         stor_lst.append(store(bufferoverun_search, engineitem, store_host=True, store_ip=True))
@@ -242,7 +256,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'censys':
-                    from theHarvester.discovery import censysearch
+                    from plugins.theHarvester.theHarvester.discovery import censysearch
                     try:
                         censys_search = censysearch.SearchCensys(word, limit)
                         stor_lst.append(store(censys_search, engineitem, store_host=True, store_emails=True))
@@ -251,7 +265,7 @@ async def start(rest_args=None):
                             print(e)
 
                 elif engineitem == 'certspotter':
-                    from theHarvester.discovery import certspottersearch
+                    from plugins.theHarvester.theHarvester.discovery import certspottersearch
                     try:
                         certspotter_search = certspottersearch.SearchCertspoter(word)
                         stor_lst.append(store(certspotter_search, engineitem, None, store_host=True))
@@ -259,28 +273,28 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'crtsh':
+                    from plugins.theHarvester.theHarvester.discovery import crtsh
                     try:
-                        from theHarvester.discovery import crtsh
                         crtsh_search = crtsh.SearchCrtsh(word)
                         stor_lst.append(store(crtsh_search, 'CRTsh', store_host=True))
                     except Exception as e:
                         print(f'[!] A timeout occurred with crtsh, cannot find {args.domain}\n {e}')
 
                 elif engineitem == 'dnsdumpster':
+                    from plugins.theHarvester.theHarvester.discovery import dnsdumpster
                     try:
-                        from theHarvester.discovery import dnsdumpster
                         dns_dumpster_search = dnsdumpster.SearchDnsDumpster(word)
                         stor_lst.append(store(dns_dumpster_search, engineitem, store_host=True, store_ip=True))
                     except Exception as e:
                         print(f'[!] An error occurred with dnsdumpster: {e} ')
 
                 elif engineitem == 'duckduckgo':
-                    from theHarvester.discovery import duckduckgosearch
+                    from plugins.theHarvester.theHarvester.discovery import duckduckgosearch
                     duckduckgo_search = duckduckgosearch.SearchDuckDuckGo(word, limit)
                     stor_lst.append(store(duckduckgo_search, engineitem, store_host=True, store_emails=True))
 
                 elif engineitem == 'fullhunt':
-                    from theHarvester.discovery import fullhuntsearch
+                    from plugins.theHarvester.theHarvester.discovery import fullhuntsearch
                     try:
                         fullhunt_search = fullhuntsearch.SearchFullHunt(word)
                         stor_lst.append(store(fullhunt_search, engineitem, store_host=True))
@@ -290,7 +304,7 @@ async def start(rest_args=None):
 
                 elif engineitem == 'github-code':
                     try:
-                        from theHarvester.discovery import githubcode
+                        from plugins.theHarvester.theHarvester.discovery import githubcode
                         github_search = githubcode.SearchGithubCode(word, limit)
                         stor_lst.append(store(github_search, engineitem, store_host=True, store_emails=True))
                     except MissingKey as ex:
@@ -299,18 +313,18 @@ async def start(rest_args=None):
                         pass
 
                 elif engineitem == 'google':
-                    from theHarvester.discovery import googlesearch
+                    from plugins.theHarvester.theHarvester.discovery import googlesearch
                     google_search = googlesearch.SearchGoogle(word, limit, start)
                     stor_lst.append(store(google_search, engineitem, process_param=google_dorking, store_host=True,
                                           store_emails=True))
 
                 elif engineitem == 'hackertarget':
-                    from theHarvester.discovery import hackertarget
+                    from plugins.theHarvester.theHarvester.discovery import hackertarget
                     hackertarget_search = hackertarget.SearchHackerTarget(word)
                     stor_lst.append(store(hackertarget_search, engineitem, store_host=True))
 
                 elif engineitem == 'hunter':
-                    from theHarvester.discovery import huntersearch
+                    from plugins.theHarvester.theHarvester.discovery import huntersearch
                     # Import locally or won't work.
                     try:
                         hunter_search = huntersearch.SearchHunter(word, limit, start)
@@ -322,7 +336,7 @@ async def start(rest_args=None):
                             pass
 
                 elif engineitem == 'intelx':
-                    from theHarvester.discovery import intelxsearch
+                    from plugins.theHarvester.theHarvester.discovery import intelxsearch
                     # Import locally or won't work.
                     try:
                         intelx_search = intelxsearch.SearchIntelx(word)
@@ -334,17 +348,17 @@ async def start(rest_args=None):
                             print(f'An exception has occurred in Intelx search: {e}')
 
                 elif engineitem == 'linkedin':
-                    from theHarvester.discovery import linkedinsearch
+                    from plugins.theHarvester.theHarvester.discovery import linkedinsearch
                     linkedin_search = linkedinsearch.SearchLinkedin(word, limit)
                     stor_lst.append(store(linkedin_search, engineitem, store_people=True))
 
                 elif engineitem == 'linkedin_links':
-                    from theHarvester.discovery import linkedinsearch
+                    from plugins.theHarvester.theHarvester.discovery import linkedinsearch
                     linkedin_links_search = linkedinsearch.SearchLinkedin(word, limit)
                     stor_lst.append(store(linkedin_links_search, 'linkedin', store_links=True))
 
                 elif engineitem == 'n45ht':
-                    from theHarvester.discovery import n45htsearch
+                    from plugins.theHarvester.theHarvester.discovery import n45htsearch
                     try:
                         n45ht_search = n45htsearch.SearchN45ht(word)
                         stor_lst.append(store(n45ht_search, engineitem, store_host=True))
@@ -352,7 +366,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'omnisint':
-                    from theHarvester.discovery import omnisint
+                    from plugins.theHarvester.theHarvester.discovery import omnisint
                     try:
                         omnisint_search = omnisint.SearchOmnisint(word)
                         stor_lst.append(store(omnisint_search, engineitem, store_host=True))
@@ -360,7 +374,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'otx':
-                    from theHarvester.discovery import otxsearch
+                    from plugins.theHarvester.theHarvester.discovery import otxsearch
                     try:
                         otxsearch_search = otxsearch.SearchOtx(word)
                         stor_lst.append(store(otxsearch_search, engineitem, store_host=True, store_ip=True))
@@ -368,7 +382,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'pentesttools':
-                    from theHarvester.discovery import pentesttools
+                    from plugins.theHarvester.theHarvester.discovery import pentesttools
                     try:
                         pentesttools_search = pentesttools.SearchPentestTools(word)
                         stor_lst.append(store(pentesttools_search, engineitem, store_host=True))
@@ -379,7 +393,7 @@ async def start(rest_args=None):
                             print(f'An exception has occurred in PentestTools search: {e}')
 
                 elif engineitem == 'projectdiscovery':
-                    from theHarvester.discovery import projectdiscovery
+                    from plugins.theHarvester.theHarvester.discovery import projectdiscovery
                     try:
                         projectdiscovery_search = projectdiscovery.SearchDiscovery(word)
                         stor_lst.append(store(projectdiscovery_search, engineitem, store_host=True))
@@ -390,12 +404,12 @@ async def start(rest_args=None):
                             print('An exception has occurred in ProjectDiscovery')
 
                 elif engineitem == 'qwant':
-                    from theHarvester.discovery import qwantsearch
+                    from plugins.theHarvester.theHarvester.discovery import qwantsearch
                     qwant_search = qwantsearch.SearchQwant(word, start, limit)
                     stor_lst.append(store(qwant_search, engineitem, store_host=True, store_emails=True))
 
                 elif engineitem == 'rapiddns':
-                    from theHarvester.discovery import rapiddns
+                    from plugins.theHarvester.theHarvester.discovery import rapiddns
                     try:
                         rapiddns_search = rapiddns.SearchRapidDns(word)
                         stor_lst.append(store(rapiddns_search, engineitem, store_host=True))
@@ -403,7 +417,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'rocketreach':
-                    from theHarvester.discovery import rocketreach
+                    from plugins.theHarvester.theHarvester.discovery import rocketreach
                     try:
                         rocketreach_search = rocketreach.SearchRocketReach(word, limit)
                         stor_lst.append(store(rocketreach_search, engineitem, store_links=True))
@@ -414,7 +428,7 @@ async def start(rest_args=None):
                             print(f'An exception has occurred in RocketReach: {e}')
 
                 elif engineitem == 'securityTrails':
-                    from theHarvester.discovery import securitytrailssearch
+                    from plugins.theHarvester.theHarvester.discovery import securitytrailssearch
                     try:
                         securitytrails_search = securitytrailssearch.SearchSecuritytrail(word)
                         stor_lst.append(store(securitytrails_search, engineitem, store_host=True, store_ip=True))
@@ -425,7 +439,7 @@ async def start(rest_args=None):
                             pass
 
                 elif engineitem == 'sublist3r':
-                    from theHarvester.discovery import sublist3r
+                    from plugins.theHarvester.theHarvester.discovery import sublist3r
                     try:
                         sublist3r_search = sublist3r.SearchSublist3r(word)
                         stor_lst.append(store(sublist3r_search, engineitem, store_host=True))
@@ -433,7 +447,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'spyse':
-                    from theHarvester.discovery import spyse
+                    from plugins.theHarvester.theHarvester.discovery import spyse
                     try:
                         spyse_search = spyse.SearchSpyse(word, limit)
                         stor_lst.append(store(spyse_search, engineitem, store_host=True, store_ip=True))
@@ -441,7 +455,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'threatcrowd':
-                    from theHarvester.discovery import threatcrowd
+                    from plugins.theHarvester.theHarvester.discovery import threatcrowd
                     try:
                         threatcrowd_search = threatcrowd.SearchThreatcrowd(word)
                         stor_lst.append(store(threatcrowd_search, engineitem, store_host=True, store_ip=True))
@@ -449,7 +463,7 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'threatminer':
-                    from theHarvester.discovery import threatminer
+                    from plugins.theHarvester.theHarvester.discovery import threatminer
                     try:
                         threatminer_search = threatminer.SearchThreatminer(word)
                         stor_lst.append(store(threatminer_search, engineitem, store_host=True, store_ip=True))
@@ -457,18 +471,18 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'trello':
-                    from theHarvester.discovery import trello
+                    from plugins.theHarvester.theHarvester.discovery import trello
                     # Import locally or won't work.
                     trello_search = trello.SearchTrello(word)
                     stor_lst.append(store(trello_search, engineitem, store_results=True))
 
                 elif engineitem == 'twitter':
-                    from theHarvester.discovery import twittersearch
+                    from plugins.theHarvester.theHarvester.discovery import twittersearch
                     twitter_search = twittersearch.SearchTwitter(word, limit)
                     stor_lst.append(store(twitter_search, engineitem, store_people=True))
 
                 elif engineitem == 'urlscan':
-                    from theHarvester.discovery import urlscan
+                    from plugins.theHarvester.theHarvester.discovery import urlscan
                     try:
                         urlscan_search = urlscan.SearchUrlscan(word)
                         stor_lst.append(store(urlscan_search, engineitem, store_host=True, store_ip=True,
@@ -477,18 +491,18 @@ async def start(rest_args=None):
                         print(e)
 
                 elif engineitem == 'virustotal':
-                    from theHarvester.discovery import virustotal
+                    from plugins.theHarvester.theHarvester.discovery import virustotal
                     virustotal_search = virustotal.SearchVirustotal(word)
                     stor_lst.append(store(virustotal_search, engineitem, store_host=True))
 
                 elif engineitem == 'yahoo':
-                    from theHarvester.discovery import yahoosearch
+                    from plugins.theHarvester.theHarvester.discovery import yahoosearch
                     yahoo_search = yahoosearch.SearchYahoo(word, limit)
                     stor_lst.append(store(yahoo_search, engineitem, store_host=True, store_emails=True))
 
                 elif engineitem == 'zoomeye':
+                    from plugins.theHarvester.theHarvester.discovery import zoomeyesearch
                     try:
-                        from theHarvester.discovery import zoomeyesearch
                         zoomeye_search = zoomeyesearch.SearchZoomEye(word, limit)
                         stor_lst.append(store(zoomeye_search, engineitem, store_host=True, store_emails=True,
                                               store_ip=True, store_interestingurls=True, store_asns=True))
@@ -677,7 +691,7 @@ async def start(rest_args=None):
     if dnslookup is True:
         print('\n[*] Starting active queries.')
         # load the reverse dns tools
-        from theHarvester.discovery.dnssearch import (
+        from plugins.theHarvester.theHarvester.discovery.dnssearch import (
             generate_postprocessing_callback,
             reverse_all_ips_in_range,
             serialize_ip_range)
@@ -743,7 +757,7 @@ async def start(rest_args=None):
     if len(args.screenshot) > 0:
         import time
         from aiomultiprocess import Pool
-        from theHarvester.screenshot.screenshot import ScreenShotter
+
         screen_shotter = ScreenShotter(args.screenshot)
         path_exists = screen_shotter.verify_path()
         # Verify path exists if not create it or if user does not create it skip screenshot
@@ -752,7 +766,7 @@ async def start(rest_args=None):
             print(f'\nScreenshots can be found in: {screen_shotter.output}{screen_shotter.slash}')
             start_time = time.perf_counter()
             print('Filtering domains for ones we can reach')
-            unique_resolved_domains = {url.split(':')[0]for url in full if ':' in url and 'www.' not in url}
+            unique_resolved_domains = {url.split(':')[0] for url in full if ':' in url and 'www.' not in url}
             if len(unique_resolved_domains) > 0:
                 # First filter out ones that didn't resolve
                 print('Attempting to visit unique resolved domains, this is ACTIVE RECON')

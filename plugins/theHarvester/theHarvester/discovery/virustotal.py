@@ -1,6 +1,8 @@
-from theHarvester.lib.core import *
-from theHarvester.parsers import myparser
+
 import re
+
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher, Core
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class SearchVirustotal:

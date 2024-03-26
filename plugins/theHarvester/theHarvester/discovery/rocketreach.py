@@ -1,6 +1,8 @@
-from theHarvester.discovery.constants import *
-from theHarvester.lib.core import *
+
 import asyncio
+
+from plugins.theHarvester.theHarvester.discovery.constants import MissingKey, get_delay
+from plugins.theHarvester.theHarvester.lib.core import Core, AsyncFetcher
 
 
 class SearchRocketReach:

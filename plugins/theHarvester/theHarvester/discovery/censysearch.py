@@ -1,11 +1,13 @@
-from theHarvester.discovery.constants import MissingKey
-from theHarvester.lib.core import Core
+
 from censys.search import CensysCertificates
 from censys.common import __version__
 from censys.common.exceptions import (
     CensysRateLimitExceededException,
     CensysUnauthorizedException,
 )
+
+from plugins.theHarvester.theHarvester.discovery.constants import MissingKey
+from plugins.theHarvester.theHarvester.lib.core import Core
 
 
 class SearchCensys:

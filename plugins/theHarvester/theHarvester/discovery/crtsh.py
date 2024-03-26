@@ -1,5 +1,6 @@
-from theHarvester.lib.core import *
-from typing import List
+from typing import List, Set
+
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher
 
 
 class SearchCrtsh:

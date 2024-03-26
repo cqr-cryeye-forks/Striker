@@ -2,8 +2,8 @@ import json
 import math
 from json.decoder import JSONDecodeError
 
-from theHarvester.lib.core import *
-from theHarvester.parsers import myparser
+from plugins.theHarvester.theHarvester.lib.core import Core, AsyncFetcher
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class SearchQwant:

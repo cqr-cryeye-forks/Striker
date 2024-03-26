@@ -9,7 +9,7 @@ from slowapi.util import get_remote_address
 from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
 
-from theHarvester import __main__
+from plugins.theHarvester.theHarvester import __main__
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title='Restful Harvest', description='Rest API for theHarvester powered by FastAPI', version='0.0.2')

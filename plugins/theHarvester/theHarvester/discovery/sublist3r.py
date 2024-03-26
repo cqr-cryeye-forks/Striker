@@ -1,5 +1,6 @@
 from typing import Type
-from theHarvester.lib.core import *
+
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher
 
 
 class SearchSublist3r:

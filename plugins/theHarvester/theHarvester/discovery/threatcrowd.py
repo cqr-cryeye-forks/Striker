@@ -1,5 +1,6 @@
 from typing import List
-from theHarvester.lib.core import *
+
+from plugins.theHarvester.theHarvester.lib.core import Core, AsyncFetcher
 
 
 class SearchThreatcrowd:

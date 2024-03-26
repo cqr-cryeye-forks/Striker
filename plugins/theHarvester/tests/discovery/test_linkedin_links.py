@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # coding=utf-8
-from theHarvester.discovery import linkedinsearch
-from theHarvester.discovery.constants import splitter
+
 import os
 import re
 import pytest
+
+from plugins.theHarvester.theHarvester.discovery import linkedinsearch
+from plugins.theHarvester.theHarvester.discovery.constants import splitter
 
 pytestmark = pytest.mark.asyncio
 github_ci = os.getenv('GITHUB_ACTIONS')  # Github set this to be the following: true instead of True

@@ -1,9 +1,11 @@
-from theHarvester.discovery import githubcode
-from theHarvester.discovery.constants import MissingKey
-from theHarvester.lib.core import Core
+
 from unittest.mock import MagicMock
 from requests import Response
 import pytest
+
+from plugins.theHarvester.theHarvester.discovery import githubcode
+from plugins.theHarvester.theHarvester.discovery.constants import MissingKey
+from plugins.theHarvester.theHarvester.lib.core import Core
 
 pytestmark = pytest.mark.asyncio
 

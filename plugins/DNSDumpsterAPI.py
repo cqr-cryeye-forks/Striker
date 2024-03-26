@@ -99,10 +99,10 @@ class DNSDumpsterAPI:
         print(tables)
 
         resource = {'domain': domain, 'dns_records': {}}
-        resource['dns_records']['dns'] = self.retrieve_results(tables[0])
-        resource['dns_records']['mx'] = self.retrieve_results(tables[1])
-        resource['dns_records']['txt'] = self.retrieve_txt_record(tables[2])
-        resource['dns_records']['host'] = self.retrieve_results(tables[3])
+        resource['dns_records']['dns'] = self.retrieve_results(tables[0]) if tables else ''
+        resource['dns_records']['mx'] = self.retrieve_results(tables[1]) if tables else ''
+        resource['dns_records']['txt'] = self.retrieve_txt_record(tables[2]) if tables else ''
+        resource['dns_records']['host'] = self.retrieve_results(tables[3]) if tables else ''
 
         # Network mapping image
         try:
@@ -122,7 +122,7 @@ class DNSDumpsterAPI:
         # XLS hosts.
         # eg. example.com-201606131255.xlsx
         try:
-            pattern = f'https://dnsdumpster.com/static/xls/{domain}-[0-9]12\.xlsx'
+            pattern = f'https://dnsdumpster.com/static/xls/{domain}-[0-9]12.xlsx'
             if xls_url := re.findall(pattern, req.content.decode('utf-8')):
                 xls_url = xls_url[0]
                 xls_data = requests.get(xls_url, verify=False).content.decode('base64')

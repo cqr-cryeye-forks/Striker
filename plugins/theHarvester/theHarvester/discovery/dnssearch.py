@@ -14,7 +14,8 @@ import sys
 from aiodns import DNSResolver
 from ipaddress import IPv4Network
 from typing import Callable, List, Optional
-from theHarvester.lib import hostchecker
+
+from plugins.theHarvester.theHarvester.lib import hostchecker
 
 
 #####################################################################

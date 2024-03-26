@@ -1,5 +1,6 @@
-from theHarvester.lib.core import *
 import re
+
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher
 
 
 class SearchOtx:

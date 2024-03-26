@@ -1,5 +1,7 @@
-from theHarvester.discovery.constants import *
-from theHarvester.lib.core import *
+import asyncio
+
+from plugins.theHarvester.theHarvester.discovery.constants import MissingKey
+from plugins.theHarvester.theHarvester.lib.core import Core, AsyncFetcher
 
 
 class SearchHunter:

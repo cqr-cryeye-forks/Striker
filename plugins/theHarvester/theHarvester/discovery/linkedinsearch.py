@@ -1,7 +1,9 @@
-from theHarvester.discovery.constants import *
-from theHarvester.lib.core import *
-from theHarvester.parsers import myparser
+
 import asyncio
+
+from plugins.theHarvester.theHarvester.discovery.constants import search, google_workaround, get_delay, splitter
+from plugins.theHarvester.theHarvester.lib.core import AsyncFetcher, Core
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class SearchLinkedin:

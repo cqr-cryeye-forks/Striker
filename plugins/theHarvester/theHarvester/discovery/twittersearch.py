@@ -1,7 +1,9 @@
-from theHarvester.discovery.constants import *
-from theHarvester.lib.core import *
-from theHarvester.parsers import myparser
+
 import re
+
+from plugins.theHarvester.theHarvester.discovery.constants import search, google_workaround
+from plugins.theHarvester.theHarvester.lib.core import Core, AsyncFetcher
+from plugins.theHarvester.theHarvester.parsers import myparser
 
 
 class SearchTwitter:
