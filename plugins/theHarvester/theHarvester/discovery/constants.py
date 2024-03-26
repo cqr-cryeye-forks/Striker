@@ -112,8 +112,6 @@ class MissingKey(Exception):
     """
     def __init__(self, source: Optional[str]):
         if source:
-            if source == "PentestTools":
-                a=1
             self.message = f'\n[!] Missing API key for {source}. '
         else:
             self.message = '\n[!] Missing CSE id. '
