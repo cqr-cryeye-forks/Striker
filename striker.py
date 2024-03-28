@@ -35,6 +35,9 @@ class Checker:
         result_dict["global_info"] = {}
         print(f'[!] IP Address : {self.ip_addr}')
         result_dict["global_info"]["ip_address"] = self.ip_addr
+        result_dict["global_info"]["cloudflare"] = "Unknown"
+        result_dict["global_info"]["server"] = "Unknown"
+        result_dict["global_info"]["clickjacking_protection"] = "Unknown"
 
         try:
             r = requests.get(target, verify=False)
@@ -116,6 +119,8 @@ class Checker:
 #             result_dict["fuzzable_urls"]["xss"] = False
 
     def cms(self):
+        result_dict["global_info"]["cms"] = "Unknown"
+
         try:
             result = str(self.br.open(f'https://whatcms.org/?s={self.domain}').read())
             detect = search(r'">[^<]*</a><a href="/New-Detection', result)
@@ -146,6 +151,8 @@ class Checker:
             print(f'Get CMS error: {e}')
 
     def honeypot(self):
+        result_dict["global_info"]["honeypot_probability"] = "Unknown"
+
         # noinspection SpellCheckingInspection
         honey = f"https://api.shodan.io/labs/honeyscore/{self.ip_addr}?key=C23OXE0bVMrul2YeqcL7zxb6jZ4pj2by"
 
@@ -217,6 +224,8 @@ class Checker:
             result_dict["nmap"].append(obj)
 
     def bypass(self, domain: str = None):
+        result_dict["global_info"]["real_ip_address"] = "Unknown"
+
         if not domain:
             domain = self.domain
         post = urlencode({'cfS': domain})
@@ -289,6 +298,7 @@ class Checker:
                 result_dict["global_info"]["operating_system"] = match.group().split(':')[1][:-5]
         except Exception as e:
             print(f"[>] Gather operation system error: {e}")
+            result_dict["global_info"]["operating_system"] = "Unknown"
 
     def get_robots_txt(self):
         try:
