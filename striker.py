@@ -41,7 +41,7 @@ class Checker:
             header = r.headers['Server']
             if 'cloudflare' in header:
                 print('[-] Cloudflare detected')
-                result_dict["global_info"]["cloudfare"] = "Detected"
+                result_dict["global_info"]["cloudflare"] = "Detected"
 
                 self.bypass(self.domain)
             else:
@@ -104,7 +104,7 @@ class Checker:
         result = str(req.read().decode('utf-8'))
         if match := search(fr"---{re.S}\.*---", result):
             print('[+] One or more parameters are vulnerable to SQL injection')
-            result_dict["fuzzable_urls"]["xss"] = True
+            # result_dict["fuzzable_urls"]["xss"] = True
             run_test = bool(cli_arguments.silent or input('[?] Show whole report? [Y/n] ').lower() != 'n')
             if run_test:
                 print("-" * 40)
@@ -113,7 +113,7 @@ class Checker:
         else:
 
             print('[-] None of parameters is vulnerable to SQL injection')
-            result_dict["fuzzable_urls"]["xss"] = False
+#             result_dict["fuzzable_urls"]["xss"] = False
 
     def cms(self):
         try:

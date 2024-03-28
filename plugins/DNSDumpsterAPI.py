@@ -24,7 +24,6 @@ class DNSDumpsterAPI:
     def display_message(self, s):
         result_dict["dns_dump"] = {}
         if self.verbose:
-            result_dict["dns_dump"]["verbose"] = s
             print(f'[verbose] {s}')
 
     @staticmethod
