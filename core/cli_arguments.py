@@ -1,4 +1,5 @@
 import argparse
+import pathlib
 
 from core.constants import search_engines
 
@@ -8,6 +9,8 @@ def create_parser():
     parser = argparse.ArgumentParser(description='Spaghetti - Web Application Security Scanner')
     parser.add_argument('-u', '--url', type=str,
                         help='Target URL (eg: http://example.com)')
+    parser.add_argument('-o', '--output-file', type=pathlib.Path,
+                        help='Path to output file')
     parser.add_argument('-e', '--engine', type=str,
                         help=f"Search engine. Default is all. Possible values: {engines}")
     parser.add_argument('-s', '--start', type=int, default=0,

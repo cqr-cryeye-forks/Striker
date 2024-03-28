@@ -12,6 +12,8 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 
+from constants import result_dict
+
 
 class DNSDumpsterAPI:
     """DNSDumpsterAPI Main Handler"""
@@ -20,7 +22,9 @@ class DNSDumpsterAPI:
         self.verbose = verbose
 
     def display_message(self, s):
+        result_dict["dns_dump"] = {}
         if self.verbose:
+            result_dict["dns_dump"]["verbose"] = s
             print(f'[verbose] {s}')
 
     @staticmethod
@@ -97,6 +101,15 @@ class DNSDumpsterAPI:
         tables = soup.findAll('table')
 
         print(tables)
+        tables_list = []
+        if tables:
+            for table in tables:
+                rows = []
+                for row in table.find_all('tr'):
+                    cols = [col.text.strip() for col in row.find_all(['th', 'td'])]
+                    rows.extend(cols)  # Extend instead of append to avoid creating inner lists
+                tables_list.append(rows)
+        result_dict["dns_dump"]["tables"] = tables_list
 
         resource = {'domain': domain, 'dns_records': {}}
         resource['dns_records']['dns'] = self.retrieve_results(tables[0]) if tables else ''

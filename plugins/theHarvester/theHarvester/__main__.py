@@ -10,6 +10,7 @@ import sys
 import string
 import secrets
 
+from constants import result_dict
 from plugins.theHarvester.theHarvester.discovery import dnssearch, shodansearch, takeover
 from plugins.theHarvester.theHarvester.discovery.constants import MissingKey
 from plugins.theHarvester.theHarvester.lib import stash, hostchecker
@@ -192,7 +193,6 @@ async def start(rest_args=None):
             if len(fasns) > 0:
                 await db.store_all(word, fasns, 'asns', engineitem)
 
-    stor_lst = []
     if args.source is not None:
         if args.source.lower() != 'all':
             engines = sorted(set(map(str.strip, args.source.split(','))))
@@ -201,35 +201,83 @@ async def start(rest_args=None):
         # Iterate through search engines in order
         if set(engines).issubset(Core.get_supportedengines()):
             print(f'[*] Target: {word} \n ')
+            result_dict["harvester"] = {"anubis": [],
+                                        "baidu": [],
+                                        "binaryedge": [],
+                                        "bing": [],
+                                        "bufferoverun": [],
+                                        "censys": [],
+                                        "certspotter": [],
+                                        "crtsh": [],
+                                        "dnsdumpster": [],
+                                        "duckduckgo": [],
+                                        "fullhunt": [],
+                                        "github-code": [],
+                                        "google": [],
+                                        "hackertarget": [],
+                                        "hunter": [],
+                                        "intelx": [],
+                                        "linkedin": [],
+                                        "linkedin_links": [],
+                                        "n45ht": [],
+                                        "omnisint": [],
+                                        "otx": [],
+                                        "pentesttools": [],
+                                        "projectdiscovery": [],
+                                        "qwant": [],
+                                        "rapiddns": [],
+                                        "rocketreach": [],
+                                        "securityTrails": [],
+                                        "sublist3r": [],
+                                        "spyse": [],
+                                        "threatcrowd": [],
+                                        "threatminer": [],
+                                        "trello": [],
+                                        "twitter": [],
+                                        "urlscan": [],
+                                        "virustotal": [],
+                                        "yahoo": [],
+                                        "zoomeye": [],
+                                        }
 
             for engineitem in engines:
                 if engineitem == 'anubis':
+                    stor_lst = []
                     from plugins.theHarvester.theHarvester.discovery import anubis
+
                     try:
                         anubis_search = anubis.SearchAnubis(word)
-                        stor_lst.append(store(anubis_search, engineitem, store_host=True))
+                        stor_lst.append(await store(anubis_search, engineitem, store_host=True))
+                        result_dict["harvester"]["anubis"] = stor_lst
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'baidu':
+                    stor_lst = []
                     from plugins.theHarvester.theHarvester.discovery import baidusearch
 
                     try:
                         baidu_search = baidusearch.SearchBaidu(word, limit)
-                        stor_lst.append(store(baidu_search, engineitem, store_host=True, store_emails=True))
+                        stor_lst.append(await store(baidu_search, engineitem, store_host=True, store_emails=True))
+                        result_dict["harvester"]["baidu"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'binaryedge':
+                    stor_lst = []
                     from plugins.theHarvester.theHarvester.discovery import binaryedgesearch
 
                     try:
                         binaryedge_search = binaryedgesearch.SearchBinaryEdge(word, limit)
-                        stor_lst.append(store(binaryedge_search, engineitem, store_host=True))
+                        stor_lst.append(await store(binaryedge_search, engineitem, store_host=True))
+                        result_dict["harvester"]["binaryedge"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'bing' or engineitem == 'bingapi':
+                    stor_lst = []
                     from plugins.theHarvester.theHarvester.discovery import bingsearch
 
                     try:
@@ -240,7 +288,9 @@ async def start(rest_args=None):
                         else:
                             bingapi += 'no'
                         stor_lst.append(
-                            store(bing_search, 'bing', process_param=bingapi, store_host=True, store_emails=True))
+                            await store(bing_search, 'bing', process_param=bingapi, store_host=True, store_emails=True))
+                        result_dict["harvester"]["bing"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -248,87 +298,128 @@ async def start(rest_args=None):
                             print(e)
 
                 elif engineitem == 'bufferoverun':
+                    stor_lst = []
                     from plugins.theHarvester.theHarvester.discovery import bufferoverun
+
                     try:
                         bufferoverun_search = bufferoverun.SearchBufferover(word)
-                        stor_lst.append(store(bufferoverun_search, engineitem, store_host=True, store_ip=True))
+                        stor_lst.append(await store(bufferoverun_search, engineitem, store_host=True, store_ip=True))
+                        result_dict["harvester"]["bufferoverun"] = stor_lst
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'censys':
+                    stor_lst = []
                     from plugins.theHarvester.theHarvester.discovery import censysearch
+
                     try:
                         censys_search = censysearch.SearchCensys(word, limit)
-                        stor_lst.append(store(censys_search, engineitem, store_host=True, store_emails=True))
+                        stor_lst.append(await store(censys_search, engineitem, store_host=True, store_emails=True))
+                        result_dict["harvester"]["censys"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
 
                 elif engineitem == 'certspotter':
+                    stor_lst = []
                     from plugins.theHarvester.theHarvester.discovery import certspottersearch
+
                     try:
                         certspotter_search = certspottersearch.SearchCertspoter(word)
-                        stor_lst.append(store(certspotter_search, engineitem, None, store_host=True))
+                        stor_lst.append(await store(certspotter_search, engineitem, None, store_host=True))
+                        result_dict["harvester"]["certspotter"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'crtsh':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import crtsh
                     try:
                         crtsh_search = crtsh.SearchCrtsh(word)
-                        stor_lst.append(store(crtsh_search, 'CRTsh', store_host=True))
+                        stor_lst.append(await store(crtsh_search, 'CRTsh', store_host=True))
+                        result_dict["harvester"]["crtsh"] = stor_lst
+
                     except Exception as e:
                         print(f'[!] A timeout occurred with crtsh, cannot find {args.domain}\n {e}')
 
                 elif engineitem == 'dnsdumpster':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import dnsdumpster
                     try:
                         dns_dumpster_search = dnsdumpster.SearchDnsDumpster(word)
-                        stor_lst.append(store(dns_dumpster_search, engineitem, store_host=True, store_ip=True))
+                        stor_lst.append(await store(dns_dumpster_search, engineitem, store_host=True, store_ip=True))
+                        result_dict["harvester"]["dnsdumpster"] = stor_lst
+
                     except Exception as e:
                         print(f'[!] An error occurred with dnsdumpster: {e} ')
 
                 elif engineitem == 'duckduckgo':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import duckduckgosearch
                     duckduckgo_search = duckduckgosearch.SearchDuckDuckGo(word, limit)
-                    stor_lst.append(store(duckduckgo_search, engineitem, store_host=True, store_emails=True))
+                    stor_lst.append(await store(duckduckgo_search, engineitem, store_host=True, store_emails=True))
+                    result_dict["harvester"]["duckduckgo"] = stor_lst
 
                 elif engineitem == 'fullhunt':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import fullhuntsearch
                     try:
                         fullhunt_search = fullhuntsearch.SearchFullHunt(word)
-                        stor_lst.append(store(fullhunt_search, engineitem, store_host=True))
+                        stor_lst.append(await store(fullhunt_search, engineitem, store_host=True))
+                        result_dict["harvester"]["fullhunt"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
 
                 elif engineitem == 'github-code':
+                    stor_lst = []
+
                     try:
                         from plugins.theHarvester.theHarvester.discovery import githubcode
                         github_search = githubcode.SearchGithubCode(word, limit)
-                        stor_lst.append(store(github_search, engineitem, store_host=True, store_emails=True))
+                        stor_lst.append(await store(github_search, engineitem, store_host=True, store_emails=True))
+                        result_dict["harvester"]["github_code"] = stor_lst
+
                     except MissingKey as ex:
                         print(ex)
                     else:
                         pass
 
                 elif engineitem == 'google':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import googlesearch
                     google_search = googlesearch.SearchGoogle(word, limit, start)
-                    stor_lst.append(store(google_search, engineitem, process_param=google_dorking, store_host=True,
-                                          store_emails=True))
+                    stor_lst.append(
+                        await store(google_search, engineitem, process_param=google_dorking, store_host=True,
+                                    store_emails=True))
+                    result_dict["harvester"]["google"] = stor_lst
 
                 elif engineitem == 'hackertarget':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import hackertarget
                     hackertarget_search = hackertarget.SearchHackerTarget(word)
-                    stor_lst.append(store(hackertarget_search, engineitem, store_host=True))
+                    stor_lst.append(await store(hackertarget_search, engineitem, store_host=True))
+                    result_dict["harvester"]["hackertarget"] = stor_lst
 
                 elif engineitem == 'hunter':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import huntersearch
                     # Import locally or won't work.
                     try:
                         hunter_search = huntersearch.SearchHunter(word, limit, start)
-                        stor_lst.append(store(hunter_search, engineitem, store_host=True, store_emails=True))
+                        stor_lst.append(await store(hunter_search, engineitem, store_host=True, store_emails=True))
+                        result_dict["harvester"]["hunter"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -336,11 +427,16 @@ async def start(rest_args=None):
                             pass
 
                 elif engineitem == 'intelx':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import intelxsearch
                     # Import locally or won't work.
                     try:
                         intelx_search = intelxsearch.SearchIntelx(word)
-                        stor_lst.append(store(intelx_search, engineitem, store_interestingurls=True, store_emails=True))
+                        stor_lst.append(
+                            await store(intelx_search, engineitem, store_interestingurls=True, store_emails=True))
+                        result_dict["harvester"]["intelx"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -348,44 +444,66 @@ async def start(rest_args=None):
                             print(f'An exception has occurred in Intelx search: {e}')
 
                 elif engineitem == 'linkedin':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import linkedinsearch
                     linkedin_search = linkedinsearch.SearchLinkedin(word, limit)
-                    stor_lst.append(store(linkedin_search, engineitem, store_people=True))
+                    stor_lst.append(await store(linkedin_search, engineitem, store_people=True))
+                    result_dict["harvester"]["linkedin"] = stor_lst
 
                 elif engineitem == 'linkedin_links':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import linkedinsearch
                     linkedin_links_search = linkedinsearch.SearchLinkedin(word, limit)
-                    stor_lst.append(store(linkedin_links_search, 'linkedin', store_links=True))
+                    stor_lst.append(await store(linkedin_links_search, 'linkedin', store_links=True))
+                    result_dict["harvester"]["linkedin_links"] = stor_lst
 
                 elif engineitem == 'n45ht':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import n45htsearch
                     try:
                         n45ht_search = n45htsearch.SearchN45ht(word)
-                        stor_lst.append(store(n45ht_search, engineitem, store_host=True))
+                        stor_lst.append(await store(n45ht_search, engineitem, store_host=True))
+                        result_dict["harvester"]["n45ht"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'omnisint':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import omnisint
                     try:
                         omnisint_search = omnisint.SearchOmnisint(word)
-                        stor_lst.append(store(omnisint_search, engineitem, store_host=True))
+                        stor_lst.append(await store(omnisint_search, engineitem, store_host=True))
+                        result_dict["harvester"]["omnisint"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'otx':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import otxsearch
                     try:
                         otxsearch_search = otxsearch.SearchOtx(word)
-                        stor_lst.append(store(otxsearch_search, engineitem, store_host=True, store_ip=True))
+                        stor_lst.append(await store(otxsearch_search, engineitem, store_host=True, store_ip=True))
+                        result_dict["harvester"]["otx"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'pentesttools':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import pentesttools
                     try:
                         pentesttools_search = pentesttools.SearchPentestTools(word)
-                        stor_lst.append(store(pentesttools_search, engineitem, store_host=True))
+                        stor_lst.append(await store(pentesttools_search, engineitem, store_host=True))
+                        result_dict["harvester"]["pentesttools"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -393,10 +511,14 @@ async def start(rest_args=None):
                             print(f'An exception has occurred in PentestTools search: {e}')
 
                 elif engineitem == 'projectdiscovery':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import projectdiscovery
                     try:
                         projectdiscovery_search = projectdiscovery.SearchDiscovery(word)
-                        stor_lst.append(store(projectdiscovery_search, engineitem, store_host=True))
+                        stor_lst.append(await store(projectdiscovery_search, engineitem, store_host=True))
+                        result_dict["harvester"]["projectdiscovery"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -404,23 +526,34 @@ async def start(rest_args=None):
                             print('An exception has occurred in ProjectDiscovery')
 
                 elif engineitem == 'qwant':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import qwantsearch
                     qwant_search = qwantsearch.SearchQwant(word, start, limit)
-                    stor_lst.append(store(qwant_search, engineitem, store_host=True, store_emails=True))
+                    stor_lst.append(await store(qwant_search, engineitem, store_host=True, store_emails=True))
+                    result_dict["harvester"]["qwant"] = stor_lst
 
                 elif engineitem == 'rapiddns':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import rapiddns
                     try:
                         rapiddns_search = rapiddns.SearchRapidDns(word)
-                        stor_lst.append(store(rapiddns_search, engineitem, store_host=True))
+                        stor_lst.append(await store(rapiddns_search, engineitem, store_host=True))
+                        result_dict["harvester"]["rapiddns"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'rocketreach':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import rocketreach
                     try:
                         rocketreach_search = rocketreach.SearchRocketReach(word, limit)
-                        stor_lst.append(store(rocketreach_search, engineitem, store_links=True))
+                        stor_lst.append(await store(rocketreach_search, engineitem, store_links=True))
+                        result_dict["harvester"]["rocketreach"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -428,10 +561,14 @@ async def start(rest_args=None):
                             print(f'An exception has occurred in RocketReach: {e}')
 
                 elif engineitem == 'securityTrails':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import securitytrailssearch
                     try:
                         securitytrails_search = securitytrailssearch.SearchSecuritytrail(word)
-                        stor_lst.append(store(securitytrails_search, engineitem, store_host=True, store_ip=True))
+                        stor_lst.append(await store(securitytrails_search, engineitem, store_host=True, store_ip=True))
+                        result_dict["harvester"]["securityTrails"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -439,73 +576,109 @@ async def start(rest_args=None):
                             pass
 
                 elif engineitem == 'sublist3r':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import sublist3r
                     try:
                         sublist3r_search = sublist3r.SearchSublist3r(word)
-                        stor_lst.append(store(sublist3r_search, engineitem, store_host=True))
+                        stor_lst.append(await store(sublist3r_search, engineitem, store_host=True))
+                        result_dict["harvester"]["sublist3r"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'spyse':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import spyse
                     try:
                         spyse_search = spyse.SearchSpyse(word, limit)
-                        stor_lst.append(store(spyse_search, engineitem, store_host=True, store_ip=True))
+                        stor_lst.append(await store(spyse_search, engineitem, store_host=True, store_ip=True))
+                        result_dict["harvester"]["spyse"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'threatcrowd':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import threatcrowd
                     try:
                         threatcrowd_search = threatcrowd.SearchThreatcrowd(word)
-                        stor_lst.append(store(threatcrowd_search, engineitem, store_host=True, store_ip=True))
+                        stor_lst.append(await store(threatcrowd_search, engineitem, store_host=True, store_ip=True))
+                        result_dict["harvester"]["threatcrowd"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'threatminer':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import threatminer
                     try:
                         threatminer_search = threatminer.SearchThreatminer(word)
-                        stor_lst.append(store(threatminer_search, engineitem, store_host=True, store_ip=True))
+                        stor_lst.append(await store(threatminer_search, engineitem, store_host=True, store_ip=True))
+                        result_dict["harvester"]["threatminer"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'trello':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import trello
                     # Import locally or won't work.
                     trello_search = trello.SearchTrello(word)
-                    stor_lst.append(store(trello_search, engineitem, store_results=True))
+                    stor_lst.append(await store(trello_search, engineitem, store_results=True))
+                    result_dict["harvester"]["trello"] = stor_lst
 
                 elif engineitem == 'twitter':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import twittersearch
                     twitter_search = twittersearch.SearchTwitter(word, limit)
-                    stor_lst.append(store(twitter_search, engineitem, store_people=True))
+                    stor_lst.append(await store(twitter_search, engineitem, store_people=True))
+                    result_dict["harvester"]["twitter"] = stor_lst
 
                 elif engineitem == 'urlscan':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import urlscan
                     try:
                         urlscan_search = urlscan.SearchUrlscan(word)
-                        stor_lst.append(store(urlscan_search, engineitem, store_host=True, store_ip=True,
-                                              store_interestingurls=True, store_asns=True))
+                        stor_lst.append(await store(urlscan_search, engineitem, store_host=True, store_ip=True,
+                                                    store_interestingurls=True, store_asns=True))
+                        result_dict["harvester"]["urlscan"] = stor_lst
+
                     except Exception as e:
                         print(e)
 
                 elif engineitem == 'virustotal':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import virustotal
                     virustotal_search = virustotal.SearchVirustotal(word)
-                    stor_lst.append(store(virustotal_search, engineitem, store_host=True))
+                    stor_lst.append(await store(virustotal_search, engineitem, store_host=True))
+                    result_dict["harvester"]["virustotal"] = stor_lst
 
                 elif engineitem == 'yahoo':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import yahoosearch
                     yahoo_search = yahoosearch.SearchYahoo(word, limit)
-                    stor_lst.append(store(yahoo_search, engineitem, store_host=True, store_emails=True))
+                    stor_lst.append(await store(yahoo_search, engineitem, store_host=True, store_emails=True))
+                    result_dict["harvester"]["yahoo"] = stor_lst
 
                 elif engineitem == 'zoomeye':
+                    stor_lst = []
+
                     from plugins.theHarvester.theHarvester.discovery import zoomeyesearch
                     try:
                         zoomeye_search = zoomeyesearch.SearchZoomEye(word, limit)
-                        stor_lst.append(store(zoomeye_search, engineitem, store_host=True, store_emails=True,
-                                              store_ip=True, store_interestingurls=True, store_asns=True))
+                        stor_lst.append(await store(zoomeye_search, engineitem, store_host=True, store_emails=True,
+                                                    store_ip=True, store_interestingurls=True, store_asns=True))
+                        result_dict["harvester"]["zoomeye"] = stor_lst
+
                     except Exception as e:
                         if isinstance(e, MissingKey):
                             print(e)
@@ -578,15 +751,23 @@ async def start(rest_args=None):
     # Results
     if len(total_asns) > 0:
         print(f'\n[*] ASNS found: {len(total_asns)}')
+        result_dict["harvester"]["asns_amount"] = len(total_asns)
+
         print('--------------------')
         total_asns = list(sorted(set(total_asns)))
+        result_dict["harvester"]["asns"] = total_asns
+
         for asn in total_asns:
             print(asn)
 
     if len(interesting_urls) > 0:
         print(f'\n[*] Interesting Urls found: {len(interesting_urls)}')
+        result_dict["harvester"]["interesting_urls_amount"] = len(interesting_urls)
+
         print('--------------------')
         interesting_urls = list(sorted(set(interesting_urls)))
+        result_dict["harvester"]["interesting_urls"] = interesting_urls
+
         for iurl in interesting_urls:
             print(iurl)
 
@@ -595,8 +776,12 @@ async def start(rest_args=None):
     else:
         if len(twitter_people_list_tracker) >= 1:
             print('\n[*] Twitter Users found: ' + str(len(twitter_people_list_tracker)))
+            result_dict["harvester"]["twitter_users_amount"] = len(twitter_people_list_tracker)
+
             print('---------------------')
             twitter_people_list_tracker = list(sorted(set(twitter_people_list_tracker)))
+            result_dict["harvester"]["twitter_users"] = list(sorted(set(twitter_people_list_tracker)))
+
             for usr in twitter_people_list_tracker:
                 print(usr)
 
@@ -605,14 +790,22 @@ async def start(rest_args=None):
     else:
         if len(linkedin_people_list_tracker) >= 1:
             print('\n[*] LinkedIn Users found: ' + str(len(linkedin_people_list_tracker)))
+            result_dict["harvester"]["linkedin_people_amount"] = len(linkedin_people_list_tracker)
+
             print('---------------------')
             linkedin_people_list_tracker = list(sorted(set(linkedin_people_list_tracker)))
+            result_dict["harvester"]["linkedin_people"] = list(sorted(set(linkedin_people_list_tracker)))
+
             for usr in linkedin_people_list_tracker:
                 print(usr)
 
     if len(linkedin_links_tracker) == 0 and ('linkedin' in engines or 'rocketreach' in engines):
         print(f'\n[*] LinkedIn Links found: {len(linkedin_links_tracker)}')
+        result_dict["harvester"]["linkedin_links_amount"] = len(linkedin_links_tracker)
+
         linkedin_links_tracker = list(sorted(set(linkedin_links_tracker)))
+        result_dict["harvester"]["linkedin_links"] = list(sorted(set(linkedin_links_tracker)))
+
         print('---------------------')
         for link in linkedin_people_list_tracker:
             print(link)
@@ -624,8 +817,12 @@ async def start(rest_args=None):
     else:
         total = length_urls
         print('\n[*] Trello URLs found: ' + str(total))
+        result_dict["harvester"]["trello_links_amount"] = total
+
         print('--------------------')
         all_urls = list(sorted(set(all_urls)))
+        result_dict["harvester"]["trello_links"] = list(sorted(set(all_urls)))
+
         for url in sorted(all_urls):
             print(url)
 
@@ -633,9 +830,13 @@ async def start(rest_args=None):
         print('\n[*] No IPs found.')
     else:
         print('\n[*] IPs found: ' + str(len(all_ip)))
+        result_dict["harvester"]["ips_amount"] = len(all_ip)
+
         print('-------------------')
         # use netaddr as the list may contain ipv4 and ipv6 addresses
         ip_list = sorted([netaddr.IPAddress(ip.strip()) for ip in set(all_ip)])
+        result_dict["harvester"]["ips"] = sorted([netaddr.IPAddress(ip.strip()) for ip in set(all_ip)])
+
         print('\n'.join(map(str, ip_list)))
         ip_list = list(ip_list)
 
@@ -643,16 +844,24 @@ async def start(rest_args=None):
         print('\n[*] No emails found.')
     else:
         print('\n[*] Emails found: ' + str(len(all_emails)))
+        result_dict["harvester"]["emails_amount"] = len(all_emails)
+
         print('----------------------')
         all_emails = sorted(list(set(all_emails)))
+        result_dict["harvester"]["emails"] = sorted(list(set(all_emails)))
+
         print(('\n'.join(all_emails)))
 
     if len(all_hosts) == 0:
         print('\n[*] No hosts found.\n\n')
     else:
         print('\n[*] Hosts found: ' + str(len(all_hosts)))
+        result_dict["harvester"]["hosts_amount"] = len(all_hosts)
+
         print('---------------------')
         all_hosts = sorted(list(set(all_hosts)))
+        result_dict["harvester"]["hosts"] = all_hosts
+
         db = stash.StashManager()
         full = [host if ':' in host and word in host else word in host.split(':')[0] and host for host in full]
         full = list({host for host in full if host})
@@ -664,6 +873,7 @@ async def start(rest_args=None):
 
     # DNS brute force
     if dnsbrute and dnsbrute[0] is True:
+        result_dict["dns_brute"] = {}
         print('\n[*] Starting DNS brute force.')
         dns_force = dnssearch.DnsForce(word, dnsserver, verbose=True)
         hosts, ips = await dns_force.run()
@@ -673,6 +883,9 @@ async def start(rest_args=None):
         if dnsbrute[1]:
             return hosts
         print('\n[*] Hosts found after DNS brute force:')
+
+        result_dict["dns_brute"]["hosts"] = hosts
+
         db = stash.StashManager()
         for host in hosts:
             print(host)
@@ -716,6 +929,8 @@ async def start(rest_args=None):
         # Display the newly found hosts
         print('\n[*] Hosts found after reverse lookup (in target domain):')
         print('--------------------------------------------------------')
+        result_dict["dns_brute"]["hosts_after_reverse_lookup"] = dnsrev
+
         for xh in dnsrev:
             print(xh)
 
@@ -727,6 +942,8 @@ async def start(rest_args=None):
         res = a.process()
         print('\n[*] Hosts found after DNS TLD expansion:')
         print('----------------------------------------')
+        result_dict["dns_brute"]["hosts_after_dns_tld"] = res
+
         for y in res:
             print(y)
             dnstldres.append(y)
@@ -749,12 +966,15 @@ async def start(rest_args=None):
                 vhost.append(data + ':' + result)
                 full.append(data + ':' + result)
         vhost = sorted(set(vhost))
+        result_dict["virtual_hosts"] = vhost
+
     else:
         pass
 
     # Screenshots
     screenshot_tups = []
     if len(args.screenshot) > 0:
+        result_dict["screenshots"] = {}
         import time
         from aiomultiprocess import Pool
 
@@ -764,6 +984,8 @@ async def start(rest_args=None):
         if path_exists:
             await screen_shotter.verify_installation()
             print(f'\nScreenshots can be found in: {screen_shotter.output}{screen_shotter.slash}')
+            result_dict["screenshots"]["screen_path"] = f"{screen_shotter.output}{screen_shotter.slash}"
+
             start_time = time.perf_counter()
             print('Filtering domains for ones we can reach')
             unique_resolved_domains = {url.split(':')[0] for url in full if ':' in url and 'www.' not in url}
@@ -775,6 +997,9 @@ async def start(rest_args=None):
                     # Filter out domains that we couldn't connect to
                     unique_resolved_domains = list(sorted({tup[0] for tup in results if len(tup[1]) > 0}))
                 async with Pool(3) as pool:
+                    result_dict["screenshots"]["unique_resolved_domains_amount"] = len(unique_resolved_domains)
+                    result_dict["screenshots"]["unique_resolved_domains"] = unique_resolved_domains
+
                     print(f'Length of unique resolved domains: {len(unique_resolved_domains)} chunking now!\n')
                     # If you have the resources you could make the function faster by increasing the chunk number
                     chunk_number = 14
@@ -795,6 +1020,7 @@ async def start(rest_args=None):
     # Shodan
     shodanres = []
     if shodan is True:
+        result_dict["shodan"] = []
         import json
         print('[*] Searching Shodan. ')
         try:
@@ -816,6 +1042,12 @@ async def start(rest_args=None):
                 shodanres.append(rowdata)
                 print(json.dumps(shodandict[ip], indent=4, sort_keys=True))
                 print('\n')
+                obj = {
+                    "ip": ip,
+                    "value": rowdata,
+                }
+                result_dict["shodan"].append(obj)
+
         except Exception as e:
             print(f'[!] An error occurred with Shodan: {e} ')
     else:
