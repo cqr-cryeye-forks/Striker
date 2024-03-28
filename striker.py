@@ -341,6 +341,7 @@ class Checker:
 
 
 if __name__ == '__main__':
+    # The Harvester is not used at all. It is unclear why it's here
     target = cli_arguments.url
     output_file = cli_arguments.output_file
 
