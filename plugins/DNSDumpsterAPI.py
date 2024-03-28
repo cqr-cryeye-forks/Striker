@@ -100,16 +100,16 @@ class DNSDumpsterAPI:
         soup = BeautifulSoup(req.content, 'html.parser')
         tables = soup.findAll('table')
 
-        print(tables)
-        tables_list = []
+        result_dict["tables"] = []
+
         if tables:
             for table in tables:
                 rows = []
                 for row in table.find_all('tr'):
-                    cols = [col.text.strip() for col in row.find_all(['th', 'td'])]
-                    rows.extend(cols)  # Extend instead of append to avoid creating inner lists
-                tables_list.append(rows)
-        result_dict["dns_dump"]["tables"] = tables_list
+                    cols = [str(col) for col in row.find_all(['th', 'td'])]
+                    rows.append(cols)
+
+                result_dict["tables"].append({"table": rows})
 
         resource = {'domain': domain, 'dns_records': {}}
         resource['dns_records']['dns'] = self.retrieve_results(tables[0]) if tables else ''

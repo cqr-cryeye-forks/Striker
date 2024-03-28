@@ -314,7 +314,7 @@ class Checker:
                     params.append(url)
             if not params:
                 print('[-] No fuzzable URLs found')
-                result_dict["fuzzable_urls"]["amount"] = "0"
+                result_dict["fuzzable_urls"]["amount"] = 0
                 return
 
             print('[+] Found %i fuzzable URLs' % len(params))
